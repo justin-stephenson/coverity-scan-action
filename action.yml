@@ -28,6 +28,10 @@ inputs:
     description: Command to pass to cov-build.
     default: make
 
+  working_directory:
+    description: Working Directory to set for entire job
+    default: ${{ github.workspace }}
+
   version:
     description: (Informational) The source version being built.
     default: ${{ github.sha }}
@@ -46,7 +50,7 @@ runs:
       name: URL encode project name
       run: echo "::set-output name=project::${{ inputs.project }}" | sed -e 's:/:%2F:g'
       shell: bash
-      working-directory: x86_64
+      working-directory: ${{ inputs.working_directory }}
 
     - name: Download Coverity Build Tool (${{ inputs.build_language }} / ${{ inputs.build_platform }})
       run: |
@@ -54,27 +58,28 @@ runs:
           --post-data "token=${TOKEN}&project=${{ steps.project.outputs.project }}" \
           -nv -O cov-analysis.tar.gz
       shell: bash
-      working-directory: x86_64
+      working-directory: ${{ inputs.working_directory }}
       env:
         TOKEN: ${{ inputs.token }}
 
     - run: mkdir cov-analysis
       shell: bash
-      working-directory: x86_64
+      working-directory: ${{ inputs.working_directory }}
     - run: tar -xzf cov-analysis.tar.gz --strip 1 -C cov-analysis
       shell: bash
-      working-directory: x86_64
+      working-directory: ${{ inputs.working_directory }}
 
     - name: Build with cov-build
       run: |
         export PATH="${PWD}/cov-analysis/bin:${PATH}"
         cov-build --dir cov-int ${{ inputs.command }}
       shell: bash
-      working-directory: x86_64
+      working-directory: ${{ inputs.working_directory }}
 
     - name: Archive results
       run: tar -czvf cov-int.tgz cov-int
       shell: bash
+      working-directory: ${{ inputs.working_directory }}
     - name: Submit results to Coverity Scan
       run: |
         curl \
@@ -86,6 +91,6 @@ runs:
           --form description="${{ inputs.description }}" \
           "https://scan.coverity.com/builds?project=${{ steps.project.outputs.project }}"
       shell: bash
-      working-directory: x86_64
+      working-directory: ${{ inputs.working_directory }}
       env:
         TOKEN: ${{ inputs.token }}
