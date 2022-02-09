@@ -45,6 +45,7 @@ runs:
     - id: project
       name: URL encode project name
       run: echo "::set-output name=project::${{ inputs.project }}" | sed -e 's:/:%2F:g'
+      working-directory: ./app
       shell: bash
 
     - name: Download Coverity Build Tool (${{ inputs.build_language }} / ${{ inputs.build_platform }})
@@ -52,11 +53,13 @@ runs:
         wget https://scan.coverity.com/download/${{ inputs.build_language }}/${{ inputs.build_platform }} \
           --post-data "token=${TOKEN}&project=${{ steps.project.outputs.project }}" \
           -nv -O cov-analysis.tar.gz
+      working-directory: ./app
       shell: bash
       env:
         TOKEN: ${{ inputs.token }}
 
     - run: mkdir cov-analysis
+      working-directory: ./app
       shell: bash
     - run: tar -xzf cov-analysis.tar.gz --strip 1 -C cov-analysis
       shell: bash
