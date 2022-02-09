@@ -46,7 +46,7 @@ runs:
       name: URL encode project name
       run: echo "::set-output name=project::${{ inputs.project }}" | sed -e 's:/:%2F:g'
       shell: bash
-      working-directory: ./app
+      working-directory: x86_64
 
     - name: Download Coverity Build Tool (${{ inputs.build_language }} / ${{ inputs.build_platform }})
       run: |
@@ -54,23 +54,23 @@ runs:
           --post-data "token=${TOKEN}&project=${{ steps.project.outputs.project }}" \
           -nv -O cov-analysis.tar.gz
       shell: bash
-      working-directory: ./app
+      working-directory: x86_64
       env:
         TOKEN: ${{ inputs.token }}
 
     - run: mkdir cov-analysis
       shell: bash
-      working-directory: ./app
+      working-directory: x86_64
     - run: tar -xzf cov-analysis.tar.gz --strip 1 -C cov-analysis
       shell: bash
-      working-directory: ./app
+      working-directory: x86_64
 
     - name: Build with cov-build
       run: |
         export PATH="${PWD}/cov-analysis/bin:${PATH}"
         cov-build --dir cov-int ${{ inputs.command }}
       shell: bash
-      working-directory: ./app
+      working-directory: x86_64
 
     - name: Archive results
       run: tar -czvf cov-int.tgz cov-int
@@ -86,6 +86,6 @@ runs:
           --form description="${{ inputs.description }}" \
           "https://scan.coverity.com/builds?project=${{ steps.project.outputs.project }}"
       shell: bash
-      working-directory: ./app
+      working-directory: x86_64
       env:
         TOKEN: ${{ inputs.token }}
