@@ -38,6 +38,9 @@ inputs:
 
 runs:
   using: composite
+  defaults:
+    run:
+      working-directory: ./app
   steps:
     # Need to encode the project name when using in URLs and HTTP forms.  Valid
     # GitHub project names only have / that need encoding, so do an ad-hoc conversion
