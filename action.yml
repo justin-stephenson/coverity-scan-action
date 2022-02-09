@@ -62,13 +62,13 @@ runs:
       working-directory: ./app
       shell: bash
     - run: tar -xzf cov-analysis.tar.gz --strip 1 -C cov-analysis
-      shell: bash
+      shell: bsh
 
     - name: Build with cov-build
       run: |
         export PATH="${PWD}/cov-analysis/bin:${PATH}"
         cov-build --dir cov-int ${{ inputs.command }}
-      shell: bash
+      shell: bsh
 
     - name: Archive results
       run: tar -czvf cov-int.tgz cov-int
