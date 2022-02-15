@@ -75,7 +75,7 @@ runs:
       id: cov-build-cache
       uses: actions/cache@v2
       with:
-        path: cov-analysis
+        path: ${{ inputs.working-directory }}/cov-analysis
         key: cov-build-${{ inputs.build_language }}-${{ inputs.build_platform }}-${{ steps.coverity-cache-lookup.outputs.version }}
 
     - name: Download Coverity Build Tool (${{ inputs.build_language }} / ${{ inputs.build_platform }})
